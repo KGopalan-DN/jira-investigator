@@ -1,10 +1,29 @@
 # Phase 1 — Parse Ticket
 
-Read and extract all relevant data from the source JIRA ticket.
+Read and extract all relevant data from the source JIRA ticket(s).
 
 ## Input
 
-A JIRA ticket key provided by the user (e.g., `ART-9684`, `CS-1234`, `SW-253539`).
+One or more JIRA ticket keys provided by the user (e.g., `ART-9684`, `CS-1234 CS-1235 CS-1236`).
+
+### Batch Mode
+
+When the user provides multiple tickets:
+1. Fetch all tickets in parallel (concurrent MCP calls or curl requests)
+2. Identify relationships — are they related (same root cause, same feature area, cloned from the same parent)?
+3. If related: present a combined intake summary grouped by theme, note shared fields (reporter, product, version, labels), highlight what's unique per ticket
+4. If unrelated: treat as separate investigations, present individual summaries, ask the user which to investigate first
+5. For related tickets, subsequent phases can share context (e.g., one codebase investigation covers all tickets)
+
+### External Evidence
+
+The user may provide additional context beyond what's in JIRA:
+- **PDF/PPTX documents**: customer presentations, security reviews, test reports. Read and extract key findings, map them to specific tickets.
+- **Email threads**: internal dev discussions, customer communications. Cross-reference with code analysis.
+- **CLI output / screenshots**: pasted directly or as images. Parse for error messages, config snippets, version info.
+- **Links to SharePoint/Confluence/external docs**: note them, attempt to fetch if accessible, ask user for content if not.
+
+Incorporate all external evidence into the intake summary alongside JIRA ticket data. Flag any contradictions between the ticket description and the external evidence.
 
 ## Step 1: Fetch Ticket Data
 
@@ -155,7 +174,9 @@ Extract 2-3 key words from the summary for the search. If potential duplicates a
 
 ## Step 8: Present Intake Summary
 
-Present a structured summary to the user:
+Present a structured summary to the user. For batch investigations, present a combined summary.
+
+**Single ticket:**
 
 ```
 Ticket: <KEY>
@@ -183,6 +204,32 @@ Linked Tickets:
 
 Flags:
   - <any issues: missing version, assigned to someone else, duplicate found, etc.>
+```
+
+**Batch (multiple related tickets):**
+
+```
+Investigation: <common theme>
+Tickets: <KEY1>, <KEY2>, <KEY3>
+Reporter: <shared reporter>
+Product: <product>
+Version: <version>
+Customer: <customer_name>
+Shared Labels: <labels common to all>
+
+Per-Ticket Summary:
+  <KEY1>: <summary> — <classification hint: bug/NFR/hardening>
+  <KEY2>: <summary> — <classification hint>
+  <KEY3>: <summary> — <classification hint>
+
+External Evidence:
+  - <document/email/CLI output provided by user>
+
+Existing R&D Tickets:
+  - <any SW/WS/AR tickets already covering these concerns>
+
+Flags:
+  - <issues, gaps, contradictions>
 ```
 
 **Wait for user confirmation before proceeding to Phase 2.**

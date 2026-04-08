@@ -19,7 +19,9 @@ Automated investigation of JIRA tickets with follow-up ticket creation in any pr
 
 ## Trigger
 
-User provides any JIRA ticket key (e.g., "investigate ART-9684", "triage CS-1234", "investigate SW-253539"). Any mention of investigating, triaging, or analyzing a JIRA ticket should use this skill exclusively.
+User provides one or more JIRA ticket keys (e.g., "investigate ART-9684", "triage CS-1234", "investigate ART-9943 9944 9945"). Any mention of investigating, triaging, or analyzing JIRA tickets should use this skill exclusively.
+
+**Batch mode:** When multiple tickets are provided, fetch all in parallel, identify relationships (shared root cause, same reporter, cloned from same parent), and investigate together when related. Present combined intake summaries and share codebase analysis across related tickets. Create separate R&D tickets per issue unless the user says otherwise.
 
 ## Self-Learning
 

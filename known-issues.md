@@ -259,6 +259,38 @@ Each entry follows this structure:
 - **Root Cause**: Uncertainty about the boot flow led to asking the user for validation instead of investigating further
 - **Fix/Workaround**: The user comes for support. Never ask them to confirm your technical analysis. If uncertain, dig deeper into the code. Trace the flow, read the configs, check the entrypoints. Only present findings, not questions about system behavior.
 
+### Batch investigation: multiple related tickets in one run
+- **Phase**: 1
+- **Date**: 2026-04-08
+- **User**: kgopalan
+- **Symptom**: User provided 3 related ART tickets (ART-9943, 9944, 9945) for a single investigation
+- **Root Cause**: The skill was designed for one ticket at a time
+- **Fix/Workaround**: Updated Phase 1 to support batch mode — fetch all tickets in parallel, identify relationships, present combined intake summary. Subsequent phases share context (one codebase investigation covers all related tickets). Updated SKILL.md trigger to accept multiple ticket keys.
+
+### Security/hardening tickets follow a different investigation pattern
+- **Phase**: 2/3/4
+- **Date**: 2026-04-08
+- **User**: kgopalan
+- **Symptom**: Three security hardening tickets (master key concerns) had no techsupport, no operational failure, no live data needed. The standard bug investigation flow (techsupport → live collection → code tracing) didn't fit.
+- **Root Cause**: The skill assumed all tickets are functional bugs or NFRs. Security hardening tickets focus on architecture review, access control analysis, and evaluating customer-proposed fixes.
+- **Fix/Workaround**: Added "Security Hardening" classification to Phase 4. When tickets are security/hardening: skip Phase 2 (no techsupport), skip Phase 3 (no live data), focus Phase 4 on architecture review and evaluating customer's proposed resolutions. Phase 1 now handles PDF/PPTX evidence from customer security reviews.
+
+### External evidence (PDFs, emails, dev discussions) as primary input
+- **Phase**: 1
+- **Date**: 2026-04-08
+- **User**: kgopalan
+- **Symptom**: Customer's AT&T security review presentation (PDF) was the primary evidence source, more detailed than the JIRA tickets themselves. Internal dev email chain provided additional context confirming code findings.
+- **Root Cause**: Phase 1 only handled JIRA ticket fields and attachments. External documents and communications weren't part of the intake flow.
+- **Fix/Workaround**: Updated Phase 1 to accept and incorporate external evidence: PDFs, PPTX, email threads, CLI output, screenshots. Map external findings to specific tickets. Cross-reference dev communications with code analysis.
+
+### Evaluate customer's proposed resolution before drafting SW ticket
+- **Phase**: 4
+- **Date**: 2026-04-08
+- **User**: kgopalan
+- **Symptom**: Customer provided specific proposed resolutions for each ticket. Needed to assess validity of each ask independently before drafting R&D tickets.
+- **Root Cause**: Phase 4 classified Bug/NFR but didn't include a step for evaluating customer-proposed fixes.
+- **Fix/Workaround**: Added Step 5b to Phase 4: evaluate each customer proposed resolution for technical validity, feasibility, side effects, and scope. Present honest assessment — valid, partially valid, or overstated — with code evidence.
+
 ### Analyzed wrong branch — missed delivered fix
 - **Phase**: 4
 - **Date**: 2026-03-24

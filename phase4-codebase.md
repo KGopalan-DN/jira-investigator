@@ -269,6 +269,17 @@ Evidence:
 - No code path exists for the requested functionality
 - Customer is requesting behavior beyond current design scope
 
+### Security Hardening
+
+The system works as designed, but the design has a security weakness that needs to be addressed.
+
+Evidence:
+- No crash or functional failure — the system operates correctly
+- The concern is about access control, key management, encryption strength, or data exposure
+- Customer provides penetration-test-style evidence (shell commands, API calls, config manipulation)
+- Typically involves architecture or design changes, not bug fixes
+- May have customer-proposed resolutions — evaluate each for validity (see Step 5b)
+
 ### CVE / Security
 
 The issue is a known vulnerability in a dependency or system component.
@@ -284,6 +295,20 @@ Not enough data to classify with confidence.
 
 - State what is known and what is missing
 - Recommend specific additional data to collect
+
+## Step 5b: Evaluate Customer's Proposed Resolution (if provided)
+
+When the customer includes a proposed fix or resolution in their ticket or supporting documents, evaluate it:
+
+1. **Is the ask technically valid?** Does the proposed fix address the actual root cause, or just a symptom?
+2. **Is it feasible?** Can it be implemented within the current architecture, or does it require fundamental changes?
+3. **Are there side effects?** Would the fix break other functionality, impact performance, or create new security gaps?
+4. **Is the scope appropriate?** Is the customer asking for too much, too little, or the right thing?
+5. **What's the right classification?** A customer may call something a "bug" when it's actually an NFR (the system was never designed to do what they want), or vice versa.
+
+Present your assessment honestly. If the ask is valid, say so. If it's partially valid or overstated, explain why with code evidence. If the proposed fix is wrong but the underlying concern is legitimate, propose an alternative.
+
+For batch investigations, evaluate each ticket's proposed resolution independently — they may have different validity levels even when related.
 
 ## Step 6: Propose Analysis to User
 
