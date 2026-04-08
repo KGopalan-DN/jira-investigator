@@ -2,6 +2,33 @@
 
 Validate the environment before investigation begins. Run this once at the start of every investigation.
 
+## Step 0: Skill Version Check
+
+Check if the local skill copy is up to date with the shared repo.
+
+```bash
+cd ~/.cursor/skills/jira-investigator
+if git rev-parse --git-dir > /dev/null 2>&1; then
+  git fetch origin --quiet 2>/dev/null
+  LOCAL=$(git rev-parse HEAD 2>/dev/null)
+  REMOTE=$(git rev-parse origin/main 2>/dev/null)
+  if [ "$LOCAL" != "$REMOTE" ] && [ -n "$REMOTE" ]; then
+    BEHIND=$(git rev-list --count HEAD..origin/main 2>/dev/null)
+    echo "BEHIND:$BEHIND"
+  else
+    echo "UP_TO_DATE"
+  fi
+else
+  echo "NO_GIT"
+fi
+```
+
+- If `UP_TO_DATE` → proceed silently
+- If `BEHIND:N` → warn: "Skill update available (N commits behind). Run `cd ~/.cursor/skills/jira-investigator && git pull` to get the latest fixes and learnings from the team."
+- If `NO_GIT` → warn: "Skill is not linked to the shared repo. Feedback sync will not work. To enable: `cd ~/.cursor/skills/jira-investigator && git init && git remote add origin https://github.com/KGopalan-DN/jira-investigator.git && git fetch origin && git reset --hard origin/main`"
+
+Do not block execution — this is informational only.
+
 ## Step 1: JIRA Credentials
 
 Extract Atlassian email and API token from the user's MCP config.

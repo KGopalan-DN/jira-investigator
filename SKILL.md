@@ -27,7 +27,9 @@ This skill improves with every run. Before starting any investigation, read [kno
 
 **During execution:** if anything unexpected happens — a command fails, JIRA rejects a field, a workaround is needed, syntax was wrong, or the user corrects your approach — append a new entry to `known-issues.md` before moving on. Follow the format defined in that file.
 
-**After completion:** at the end of the run, review whether any new learnings should be recorded. If the run was clean with no surprises, no entry is needed.
+**After completion:** at the end of the run, review whether any new learnings should be recorded. If the run was clean with no surprises, no entry is needed. Then run the feedback sync flow to submit learnings back to the shared repo.
+
+**Feedback sync:** read and follow [feedback-sync.md](feedback-sync.md). This runs automatically at the end of every skill run if `known-issues.md` was modified. It creates a branch, commits the changes, pushes, and opens a PR for the skill owner to review. The user can also trigger it manually by saying "log feedback" or "report issue".
 
 This ensures every team member benefits from every other team member's runs. The skill gets smarter over time regardless of who uses it.
 
@@ -97,6 +99,12 @@ If classified as NFR:
 
 ### Cross-Project
 The source ticket can be from any JIRA project (ART, CS, SW, WS, AR, or any other). The follow-up ticket can be created in any project the user has access to. The skill does not hardcode project mappings — it asks the user.
+
+### Feedback Sync
+
+Read and follow [feedback-sync.md](feedback-sync.md).
+
+Runs automatically after every investigation if `known-issues.md` was modified. Also triggered when user says "log feedback", "report issue", or "submit learning". Creates a PR on the shared skill repo for the skill owner to review and merge.
 
 ## Key Rules
 
