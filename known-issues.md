@@ -318,6 +318,14 @@ Each entry follows this structure:
 - **Root Cause**: Each JIRA project can have different issue screens with different custom fields. A field that works on ART may have a different ID or not exist on SW.
 - **Fix/Workaround**: After creating a ticket, query `editmeta` to discover the exact custom fields available for that issue type in that project. This is more reliable than hardcoding field IDs. Pattern: `curl -s /rest/api/2/issue/<KEY>/editmeta | filter for relevant field names`.
 
+### Comments on customer-facing tickets must be generic — no internal ticket details
+- **Phase**: 5
+- **Date**: 2026-04-09
+- **User**: kgopalan
+- **Symptom**: Comment on ART-9944 exposed the internal SW ticket key and URL ("R&D ticket created: SW-257066")
+- **Root Cause**: Source tickets (ART, etc.) are customer-facing. Internal R&D ticket keys, URLs, and investigation details should not be visible to the customer.
+- **Fix/Workaround**: Use a generic comment like "Opened an internal ticket for investigation. Will revert once we have more feedback." The JIRA issue link (Step 6) already provides internal traceability — the comment is just a customer-facing status update. Updated Step 7 in phase5-create-ticket.md.
+
 ### Analyzed wrong branch — missed delivered fix
 - **Phase**: 4
 - **Date**: 2026-03-24

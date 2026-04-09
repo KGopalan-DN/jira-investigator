@@ -332,7 +332,7 @@ curl -s -X POST \
 
 ## Step 7: Add Comment on Source Ticket
 
-Post a comment on the source ticket noting the R&D ticket was created:
+Post a **generic** comment on the source ticket. Source tickets (ART, etc.) are customer-facing — never expose internal R&D ticket keys, URLs, or details in the comment.
 
 ```bash
 curl -s -X POST \
@@ -340,9 +340,16 @@ curl -s -X POST \
   -H "Authorization: Basic $(echo -n '<email>:<token>' | base64)" \
   -H "Content-Type: application/json" \
   -d '{
-    "body": "R&D ticket created: <CREATED_KEY>\n<link_to_created_ticket>"
+    "body": "Opened an internal ticket for investigation. Will revert once we have more feedback."
   }'
 ```
+
+**Rules:**
+- Do NOT include the internal ticket key (e.g., SW-XXXXX) in the comment
+- Do NOT include URLs to internal tickets
+- Do NOT describe the internal investigation details
+- Keep it brief and customer-appropriate
+- The JIRA link between the tickets (Step 6) already provides internal traceability — no need to duplicate it in comments
 
 ## Step 8: Upload Techsupport to FTP (Optional)
 
