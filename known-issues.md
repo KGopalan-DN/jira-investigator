@@ -291,6 +291,33 @@ Each entry follows this structure:
 - **Root Cause**: Phase 4 classified Bug/NFR but didn't include a step for evaluating customer-proposed fixes.
 - **Fix/Workaround**: Added Step 5b to Phase 4: evaluate each customer proposed resolution for technical validity, feasibility, side effects, and scope. Present honest assessment — valid, partially valid, or overstated — with code evidence.
 
+### SW ticket summary must be prefixed with source ticket key
+- **Phase**: 5
+- **Date**: 2026-04-09
+- **User**: kgopalan
+- **Symptom**: User manually prefixed the SW ticket summary with "ART-9944:" after creation
+- **Root Cause**: The skill created the summary without the source ticket key prefix. R&D tickets should reference the originating customer ticket in the summary for traceability.
+- **Fix/Workaround**: Always prefix the SW ticket summary with `<SOURCE_KEY>: <summary>`. Example: `ART-9944: Custom master key can be obtained in plaintext from root shell via TpmKeyApi.decrypt()`. Updated Step 3 payload and Step 0c draft template.
+
+### SW project has TWO "Customer Issue" custom fields
+- **Phase**: 5
+- **Date**: 2026-04-09
+- **User**: kgopalan
+- **Symptom**: Support Tab showed "Customer Issue: No" even though `customfield_10501` was set to "Yes"
+- **Root Cause**: The SW project has its own "Customer Issue" field (`customfield_11575`) in addition to the legacy/shared field (`customfield_10501`). The Support Tab reads `customfield_11575`, not `customfield_10501`. Both fields exist on the SW Bug issue screen and both must be set.
+- **Fix/Workaround**: Always set BOTH fields to "Yes":
+  - `customfield_10501` — Customer Issue (legacy/shared)
+  - `customfield_11575` — Customer Issue (SW project-specific)
+  - Use the `editmeta` endpoint (`/rest/api/2/issue/<KEY>/editmeta`) to discover project-specific custom fields when working with a new project. Filter for field names containing "customer", "support", or "severity".
+
+### Use editmeta endpoint to discover project-specific custom fields
+- **Phase**: 5
+- **Date**: 2026-04-09
+- **User**: kgopalan
+- **Symptom**: Custom field IDs differ between JIRA projects (ART vs SW). Hardcoded field IDs from one project don't always map correctly to another.
+- **Root Cause**: Each JIRA project can have different issue screens with different custom fields. A field that works on ART may have a different ID or not exist on SW.
+- **Fix/Workaround**: After creating a ticket, query `editmeta` to discover the exact custom fields available for that issue type in that project. This is more reliable than hardcoding field IDs. Pattern: `curl -s /rest/api/2/issue/<KEY>/editmeta | filter for relevant field names`.
+
 ### Analyzed wrong branch — missed delivered fix
 - **Phase**: 4
 - **Date**: 2026-03-24

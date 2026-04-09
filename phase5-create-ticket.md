@@ -44,7 +44,7 @@ Also confirm:
 --- DRAFT ---
 Project: <TARGET_PROJECT>
 Type: <Bug / New Feature>
-Summary: <summary>
+Summary: <SOURCE_KEY>: <summary>
 Priority: <priority>
 Component: <component>
 
@@ -185,7 +185,7 @@ cat > ~/AI/tickets/<SOURCE_KEY>/ticket_payload.json << 'PAYLOAD'
 {
   "fields": {
     "project": { "key": "<TARGET_PROJECT>" },
-    "summary": "<summary>",
+    "summary": "<SOURCE_KEY>: <summary>",
     "issuetype": { "name": "<Bug or New Feature>" },
     "priority": { "name": "<mapped_priority>" },
     "description": "<description_placeholder>",
@@ -266,11 +266,32 @@ These custom fields are only available on the Bug issue screen, not New Feature.
 
 **The Customer Name and Customer Severity MUST match the source ticket exactly.** Do not re-interpret or change them. Copy the values as-is from what Phase 1 extracted.
 
+**IMPORTANT: The SW project has TWO "Customer Issue" fields.** Both must be set to "Yes" for the Support Tab to display correctly:
+- `customfield_10501` — Customer Issue (legacy/shared field)
+- `customfield_11575` — Customer Issue (SW project-specific field)
+
+If you skip `customfield_11575`, the Support Tab will show "Customer Issue: No" even though `customfield_10501` is "Yes".
+
+**Discovery tip:** If unsure which custom fields a project uses, query the editmeta endpoint first:
+```bash
+curl -s "https://drivenets.atlassian.net/rest/api/2/issue/<CREATED_KEY>/editmeta" \
+  -H "Authorization: Basic $(echo -n '<email>:<token>' | base64)" \
+  -H "Content-Type: application/json" | python3 -c "
+import sys, json
+fields = json.load(sys.stdin)['fields']
+for k, v in sorted(fields.items()):
+    name = v.get('name','').lower()
+    if any(kw in name for kw in ['customer','support','severity']):
+        print(f'{k}: {v[\"name\"]} (required={v.get(\"required\",False)})')
+"
+```
+
 ```bash
 cat > ~/AI/tickets/<SOURCE_KEY>/support_fields.json << 'PAYLOAD'
 {
   "fields": {
     "customfield_10501": { "value": "Yes" },
+    "customfield_11575": { "value": "Yes" },
     "customfield_11630": [{ "value": "<customer_name_from_source>" }],
     "customfield_11533": { "value": "<customer_severity_from_source>" }
   }
@@ -284,7 +305,8 @@ curl -s -X PUT \
   -d @~/AI/tickets/<SOURCE_KEY>/support_fields.json
 ```
 
-- `customfield_10501` — Customer Issue: always "Yes"
+- `customfield_10501` — Customer Issue (legacy): always "Yes"
+- `customfield_11575` — Customer Issue (SW-specific): always "Yes"
 - `customfield_11630` — Customer Name: **exact value from source ticket** (e.g., "AT&T - Artemis"). Format: `[{"value": "<name>"}]`
 - `customfield_11533` — Customer Severity: **exact value from source ticket** (e.g., "1", "2", or "3")
 
@@ -383,7 +405,8 @@ Check:
 - Description is populated (not empty or placeholder)
 - Priority matches
 - Component matches
-- Support tab fields are set (Bug only)
+- Support tab fields are set (Bug only) — verify BOTH `customfield_10501` AND `customfield_11575` are "Yes"
+- Labels copied from source ticket
 - Link to source ticket exists
 
 If anything is missing, attempt to fix it. If it can't be fixed automatically, tell the user what needs manual attention.
